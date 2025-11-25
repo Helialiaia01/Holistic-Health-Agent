@@ -1,70 +1,28 @@
 """
-Intake Agent
-Conversationally gathers health information from user.
-Uses natural conversation flow, not survey-like.
+Intake Agent - Dr. Berg Style
+Gathers metabolic health information using Dr. Berg's educational approach.
+Focuses on root causes, not just symptoms.
 """
 
 from google.adk.agents import LlmAgent
 from google.adk.models.google_llm import Gemini
 from google.genai import types
 from src.config import config
+from src.prompts.dr_berg_style import INTAKE_AGENT_INSTRUCTION
 
 def intake_agent() -> LlmAgent:
     """
-    Create the Intake Agent.
+    Create the Intake Agent with Dr. Berg's teaching style.
     
-    This agent starts the conversation and gathers health information:
-    - What's bothering them (symptoms/concerns)
-    - Sleep patterns
-    - Diet type
-    - Exercise habits
-    - Sun exposure
-    - Current health conditions
-    - Existing supplements
+    This agent:
+    - Gathers comprehensive metabolic health information
+    - Uses Dr. Berg's framework (insulin resistance, deficiencies, gut health)
+    - Asks questions that reveal root causes
+    - Educates while gathering information
+    - Builds a complete health profile for analysis
     
-    The agent asks questions conversationally, not like a survey.
-    It remembers the user's responses and builds a health profile.
-    """
-    
-    intake_instruction = """
-    You are a friendly health coach interviewing a user about their health.
-    
-    Your goal: Understand their health situation so other specialists can help them.
-    
-    Important principles:
-    1. Be conversational and empathetic, NOT survey-like
-    2. Ask one or two questions at a time, then listen
-    3. Remember what they say and reference it later
-    4. Ask follow-up questions to understand root causes
-    5. Be warm and non-judgmental
-    
-    Information to gather (in natural conversation):
-    - Primary health concern (why are they here?)
-    - Sleep: hours per night, quality, bedtime routine
-    - Diet: general style (processed, whole foods, vegetarian, etc.) and typical meals
-    - Exercise: type, frequency, intensity
-    - Sun exposure: mostly indoor or outdoor
-    - Mood: general mood, any depression/anxiety
-    - Energy levels: when do they feel good/bad
-    - Existing supplements or medications
-    - Any health conditions
-    
-    Example conversation flow:
-    User: "I'm tired all the time"
-    You: "That sounds frustrating. Tell me a bit about your sleep - how many hours are you getting?"
-    User: "About 5 hours"
-    You: "Only 5 hours is rough. What time do you go to bed and wake up? And is it good quality sleep?"
-    
-    NOT like:
-    "Please answer these 10 questions: 1) How many hours sleep? 2) What time bed? ..."
-    
-    After gathering enough information (roughly 3-5 exchanges), summarize what you've learned and 
-    suggest the next step: "Let me pass you to our analyzer to identify what might be going on."
-    
-    Be specific and remember details. Extract concrete information like:
-    - Exact hours of sleep (not just "not much")
-    - Specific meals or diet type (not just "eat okay")
-    - Type and frequency of exercise (not just "exercise sometimes")
+    The agent is conversational but thorough, helping patients understand
+    what information matters and why.
     """
     
     agent = LlmAgent(
@@ -73,8 +31,9 @@ def intake_agent() -> LlmAgent:
             model=config.MODEL_NAME,
             api_key=config.GOOGLE_API_KEY
         ),
-        description="Conversational health intake agent. Gathers health information from user.",
-        instruction=intake_instruction,
+        description="Dr. Berg-style health intake agent. Gathers metabolic health information with educational approach.",
+        instruction=INTAKE_AGENT_INSTRUCTION,
+        output_key="health_profile",  # Store for next agent
     )
     
     return agent
