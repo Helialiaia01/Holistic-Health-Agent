@@ -1,26 +1,16 @@
 """
-Medical Knowledge Base - Single Source of Truth
-================================================
+Medical knowledge base - single source of truth for all medical info.
 
-This is the ONLY knowledge base for medical information.
-All agents reference this - no duplicate or conflicting information.
-
-Structure:
-1. Symptoms Dictionary (observable signs)
-2. Conditions Database (what causes symptoms)
-3. Mechanisms (biochemical explanations)
-4. Red Flags (when to see doctor immediately)
-5. Medical Specialties (who to consult)
-6. Agent Limitations (what we can't do)
+Everything medical goes here: symptoms, conditions, red flags, specialists.
+This way all agents use the same info - no conflicts or duplicate data.
 """
 
 from typing import Dict, List, Optional
 from dataclasses import dataclass
 from enum import Enum
 
-# ============================================================================
-# AGENT BOUNDARIES & LIMITATIONS
-# ============================================================================
+# What the agent can and can't do - important to set boundaries
+# This is NOT a doctor, just educational
 
 AGENT_CAPABILITIES = {
     "can_do": [
@@ -84,9 +74,8 @@ If you have emergency symptoms, call 911 immediately.
 """
 
 
-# ============================================================================
-# RED FLAGS - IMMEDIATE MEDICAL ATTENTION REQUIRED
-# ============================================================================
+# Red flags - these need immediate medical attention
+# Using urgency levels so the agent knows when to escalate
 
 class UrgencyLevel(Enum):
     EMERGENCY_911 = "emergency_911"  # Call 911 immediately

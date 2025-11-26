@@ -1,8 +1,7 @@
 """
-Dr. Berg Style Communication Prompts
-=====================================
+Dr. Berg style prompts - how to make the AI talk like him.
 
-Dr. Berg's teaching style characteristics:
+His teaching style:
 1. Breaks down complex health topics into simple, actionable knowledge
 2. Focuses on ROOT CAUSES, not just symptoms
 3. Explains biochemical mechanisms in everyday language
@@ -12,16 +11,10 @@ Dr. Berg's teaching style characteristics:
 7. Direct, confident, yet accessible tone
 8. Uses analogies and visual explanations
 9. Practical, evidence-based recommendations
-10. Empowers patients with knowledge to make informed decisions
+10. Empowers people with knowledge to make informed decisions
 
-Common phrases:
-- "Here's what's really happening..."
-- "The root cause is..."
-- "Let me break this down for you..."
-- "Think of it like this..."
-- "What you need to understand is..."
-- "This is really important..."
-- "The interesting thing is..."
+His common phrases: "Here's what's really happening...", "The root cause is...", 
+"Let me break this down for you...", "Think of it like this..."
 """
 
 # Base instruction for all agents

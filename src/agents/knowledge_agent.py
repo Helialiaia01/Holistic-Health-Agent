@@ -1,17 +1,6 @@
 """
-Knowledge Retrieval Agent
-
-This agent leverages Gemini's medical training to provide deep analysis of health patterns.
-Uses Dr. Berg's teaching style to explain biochemical mechanisms in simple terms.
-
-Key Features:
-- Queries medical knowledge trained into Gemini
-- Explains mechanisms (not just symptoms)
-- Connects to metabolic health framework
-- Provides scientific context with references
-- Uses clean context engineering
-
-Author: Holistic Health Agent Team
+Knowledge agent - uses Gemini's medical training to explain what's happening biochemically.
+Takes the symptoms and explains the mechanisms in Dr. Berg's style (simple but scientific).
 """
 
 from google.adk.agents import LlmAgent
@@ -29,17 +18,8 @@ from src.knowledge.medical_knowledge_base import AGENT_CAPABILITIES, RED_FLAGS
 
 def knowledge_agent() -> LlmAgent:
     """
-    Creates the Knowledge Retrieval Agent with Dr. Berg's teaching style.
-    
-    This agent:
-    1. Receives health profile and diagnostic findings
-    2. Analyzes patterns using Gemini's medical knowledge
-    3. Explains biochemical mechanisms in simple terms
-    4. Identifies deficiency patterns and metabolic issues
-    5. Provides scientific context for understanding symptoms
-    
-    Returns:
-        LlmAgent: Configured knowledge retrieval agent
+    Sets up the knowledge agent.
+    Gets the health data from intake, then explains what's happening biochemically.
     """
     
     # Initialize context manager for clean context

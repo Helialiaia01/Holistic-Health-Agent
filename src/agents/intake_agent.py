@@ -1,7 +1,6 @@
 """
-Intake Agent - Dr. Berg Style
-Gathers metabolic health information using Dr. Berg's educational approach.
-Focuses on root causes, not just symptoms.
+Intake agent - does the initial health interview.
+Asks about symptoms, diet, sleep, stress - tries to find root causes like Dr. Berg does.
 """
 
 from google.adk.agents import LlmAgent
@@ -12,17 +11,8 @@ from src.prompts.dr_berg_style import INTAKE_AGENT_INSTRUCTION
 
 def intake_agent() -> LlmAgent:
     """
-    Create the Intake Agent with Dr. Berg's teaching style.
-    
-    This agent:
-    - Gathers comprehensive metabolic health information
-    - Uses Dr. Berg's framework (insulin resistance, deficiencies, gut health)
-    - Asks questions that reveal root causes
-    - Educates while gathering information
-    - Builds a complete health profile for analysis
-    
-    The agent is conversational but thorough, helping patients understand
-    what information matters and why.
+    Sets up the intake agent with Dr. Berg's style.
+    It asks follow-up questions to dig into root causes, not just list symptoms.
     """
     
     agent = LlmAgent(
@@ -39,38 +29,36 @@ def intake_agent() -> LlmAgent:
     return agent
 
 
-# Example usage function for testing
+# Just for testing - runs a sample conversation
 async def run_intake_example():
-    """Test the intake agent with a sample conversation"""
+    """Quick test to see if the agent responds properly"""
     from google.adk.runners import InMemoryRunner
     from google.adk.sessions import InMemorySessionService
     
     # Create agent
     agent = intake_agent()
     
-    # Setup session
+    # Just setting up a test session
     session_service = InMemorySessionService()
     app_name = "health_agent"
     user_id = "demo_user"
     session_id = "demo_session_1"
     
-    # Create session
     session = await session_service.create_session(
         app_name=app_name,
         user_id=user_id,
         session_id=session_id
     )
     
-    # Create runner
     runner = InMemoryRunner(agent=agent)
     
-    # Sample user message
+    # Try a test message
     user_message = "I'm exhausted all the time. I don't know what's wrong with me."
     user_content = types.Content(parts=[types.Part(text=user_message)])
     
     print(f"User: {user_message}\n")
     
-    # Run the agent
+    # See what the agent says back
     async for event in runner.run_async(new_message=user_content):
         if event.is_final_response() and event.content:
             for part in event.content.parts:

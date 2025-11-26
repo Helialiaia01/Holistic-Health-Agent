@@ -1,17 +1,8 @@
 """
-Medical Specialty Router Agent
-================================
+Specialty Router - maps symptoms to the right medical specialist.
 
-Solves the problem: "I have these symptoms, but which doctor should I see?"
-
-Many people don't know if their issue needs:
-- Endocrinologist (hormones)
-- Dermatologist (skin)
-- Gastroenterologist (digestive)
-- Cardiologist (heart)
-- etc.
-
-This agent analyzes symptoms and routes to the correct specialist.
+The main problem I'm solving: people don't know which doctor to see.
+Is it hormones? Skin? Digestive? This figures it out based on symptom patterns.
 """
 
 from google.adk.agents import LlmAgent
@@ -28,9 +19,7 @@ from src.knowledge.medical_knowledge_base import (
 from typing import Dict, List
 
 def create_specialty_router_tool() -> FunctionTool:
-    """
-    Create a tool that routes symptoms to appropriate medical specialists.
-    """
+    """Creates the routing tool - this is what actually does the symptom matching"""
     
     def recommend_specialist(
         symptoms: List[str],
@@ -54,7 +43,7 @@ def create_specialty_router_tool() -> FunctionTool:
         # Check for red flags first
         red_flag_matches = []
         for flag in RED_FLAGS:
-            # Simple keyword matching (in production, use more sophisticated matching)
+            # Match flag symptoms with user symptoms
             if any(keyword in ' '.join(symptoms).lower() for keyword in flag.symptom.lower().split()):
                 red_flag_matches.append({
                     "symptom": flag.symptom,
