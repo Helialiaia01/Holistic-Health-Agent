@@ -1,6 +1,6 @@
-# Holistic Health Agent
+# Holistic Health Agent - DOROST
 
-An AI system that helps people figure out **which medical specialist to see** based on their symptoms.
+An AI system that helps people figure out **which medical specialist to see** based on their symptoms, powered by multi-agent AI and Dr. Berg's health education methodology.
 
 ## The Problem
 
@@ -8,55 +8,224 @@ You're tired, have brain fog, and sugar cravings. Do you need an endocrinologist
 
 Most people waste time seeing the wrong doctor first, or get generic advice that doesn't help.
 
-## What This Does
+## The Solution: Dorost
 
-This agent analyzes your symptoms and tells you which specialist you actually need:
+**Dorost** combines 6 AI agents to:
+1. Ask intelligent health questions
+2. Guide physical self-examination
+3. Route to the right specialist (the core innovation)
+4. Explain root causes in Dr. Berg's style
+5. Give precise, actionable recommendations
+
+## Example Conversation
 
 ```
 You: "I'm constantly tired and crave sugar after meals"
 
-Agent: "See an Endocrinologist
-       
-       Why: Your symptoms (fatigue + cravings + crashes) 
-       match insulin resistance - a metabolic issue.
-       
-       They'll test: Fasting insulin, HbA1c, thyroid panel
-       
-       Primary care usually misses this - they only check 
-       glucose, which looks normal in early stages."
+Dorost: "That's a classic pattern of insulin resistance. Here's what's happening 
+in your body:
+
+When you eat high-carb foods, insulin spikes. Over time your cells stop responding.
+Your pancreas makes MORE insulin. You can't burn fat for energy, but your cells are 
+starving. That's the fatigue and cravings.
+
+You should see an Endocrinologist - they specialize in metabolic issues.
+
+They'll test: Fasting insulin, HbA1c, thyroid panel
+
+What to do now: Try intermittent fasting + low carb to lower insulin naturally..."
 ```
 
-### 9 Specialties Covered
+## 9 Medical Specialties Covered
 
-- Endocrinologist (hormones, metabolism)
-- Gastroenterologist (digestive)
-- Cardiologist (heart)
-- Dermatologist (skin)
-- Neurologist (brain/nerves)
-- Rheumatologist (autoimmune, joints)
-- Psychiatrist (mental health)
-- Hematologist (blood)
-- Primary Care (general)
+- Endocrinologist - Hormones, metabolism, diabetes, PCOS
+- Gastroenterologist - Digestive system, IBS, IBD, gut health
+- Cardiologist - Heart, blood pressure, palpitations
+- Dermatologist - Skin, hair, nails, rashes
+- Neurologist - Brain, nerves, headaches, numbness
+- Rheumatologist - Autoimmune, arthritis, lupus
+- Psychiatrist - Mental health, mood disorders
+- Hematologist - Blood disorders, anemia
+- Primary Care - General health, first contact
 
-## How It Works
+## How It Works - Multi-Agent Architecture
 
-Uses **Gemini 2.5-flash-lite** with custom prompts to:
-1. Ask intelligent follow-up questions about your symptoms
-2. Match symptom patterns to medical specializations
-3. Explain the biochemical mechanism in simple terms
-4. Give precise recommendations (not generic advice)
+```
+User Input
+    ↓
+┌─────────────────────────────────────┐
+│ 1. INTAKE AGENT                     │
+│ Asks: symptoms, diet, sleep, stress │
+└────────────┬────────────────────────┘
+             ↓
+┌─────────────────────────────────────┐
+│ 2. DIAGNOSTIC AGENT                 │
+│ Guides: tongue, nails, skin checks  │
+└────────────┬────────────────────────┘
+             ↓
+┌─────────────────────────────────────┐
+│ 3. SPECIALTY ROUTER ⭐              │
+│ Maps symptoms → right specialist    │
+│ Uses medical knowledge base         │
+└────────────┬────────────────────────┘
+             ↓
+┌─────────────────────────────────────┐
+│ 4. KNOWLEDGE AGENT                  │
+│ Explains biochemical mechanisms     │
+│ Dr. Berg style teaching             │
+└────────────┬────────────────────────┘
+             ↓
+┌─────────────────────────────────────┐
+│ 5. ROOT CAUSE AGENT                 │
+│ Shows systems thinking: cascades    │
+│ Vicious cycles analysis             │
+└────────────┬────────────────────────┘
+             ↓
+┌─────────────────────────────────────┐
+│ 6. RECOMMENDER AGENT                │
+│ Specific supplements, diet, lifestyle
+│ Exact forms, dosages, timing        │
+└─────────────────────────────────────┘
+```
 
-Built with Google's Agent Development Kit (ADK).
+## Architecture Components
 
-## Try It
+**Core Files:**
+- `src/agents/` - 6 specialized AI agents
+- `src/knowledge/medical_knowledge_base.py` - Medical specialties + red flags + routing
+- `src/prompts/dr_berg_style.py` - 785 lines of system prompts
+- `src/knowledge/context_engineering.py` - Session management + memory
+- `src/evaluation.py` - Agent performance metrics & evaluation
+- `src/logger.py` - Comprehensive logging & tracing
+- `src/orchestrator.py` - Multi-agent coordination
+
+**Key Features:**
+- Multi-agent sequential pipeline with clean context flow
+- Medical knowledge base (9 specialties, 16 red flags)
+- Session management with clean context (no stale data)
+- Specialty routing with pattern matching
+- Safety checks (red flag detection, confidence scoring)
+- Performance metrics & observability (evaluation tracking)
+- Comprehensive logging (file + console output)
+
+### System Architecture
+
+```
+╔═══════════════════════════════════════════════════════════════════════════╗
+║                        DOROST - Multi-Agent Health System                 ║
+╚═══════════════════════════════════════════════════════════════════════════╝
+
+                              User Input
+                                  │
+                    ┌─────────────┴─────────────┐
+                    │                           │
+            Session Management          Logging & Metrics
+            (context_engineering.py)    (logger.py + evaluation.py)
+                    │                           │
+                    └─────────────┬─────────────┘
+                                  │
+        ┌─────────────────────────────────────────────────────────┐
+        │          Sequential Agent Pipeline                      │
+        │                                                         │
+        │  ┌──────────────┐   ┌──────────────┐   ┌───────────┐  │
+        │  │  1. INTAKE   │──▶│ 2. DIAGNOSTIC│──▶│ 3. ROUTER │  │
+        │  │ Agent        │   │ Agent        │   │ Agent     │  │
+        │  └──────────────┘   └──────────────┘   └─────┬─────┘  │
+        │                                              │         │
+        │                         ┌────────────────────┘         │
+        │                         │                              │
+        │                    ┌────▼──────────┐   ┌────────────┐ │
+        │                    │ 4. KNOWLEDGE  │──▶│ 5. ROOT    │ │
+        │                    │ Agent         │   │ CAUSE Ag.  │ │
+        │                    └────────────────┘   └────┬───────┘ │
+        │                                             │          │
+        │                         ┌───────────────────┘          │
+        │                         │                              │
+        │                    ┌────▼──────────┐                  │
+        │                    │ 6. RECOMMENDER│                  │
+        │                    │ Agent         │                  │
+        │                    └─────────────────┘                 │
+        │                                                         │
+        └─────────────────────────────────────────────────────────┘
+                                  │
+                    ┌─────────────┴─────────────┐
+                    │                           │
+            Output to User              Save Metrics
+                                        (Evaluation Log)
+
+CONTEXT FLOW:
+User Input → Intake Profile → Diagnostic Findings → Specialty Recommendation
+         → Medical Analysis → Root Cause Analysis → Final Recommendations
+
+KNOWLEDGE INTEGRATION:
+Every agent has access to:
+• Medical knowledge base (9 specializations, 16 red flags)
+• Dr. Berg-style prompts (785 lines of expertise)
+• Clean session context (no stale data)
+• Performance logging & metrics
+```
+
+### Data Flow Example
+
+```
+USER: "I have constant fatigue and sugar cravings"
+  │
+  ├─▶ INTAKE: "Tell me about your diet and sleep"
+  │   │ Gathers health profile
+  │   └─▶ OUTPUT: {symptoms, diet, sleep, stress, ...}
+  │
+  ├─▶ DIAGNOSTIC: "Check your tongue color and nails"
+  │   │ Physical examination signs
+  │   └─▶ OUTPUT: {tongue_findings, nail_condition, ...}
+  │
+  ├─▶ SPECIALTY ROUTER: Maps symptoms to specialist
+  │   │ Pattern matching with medical KB
+  │   └─▶ OUTPUT: "See ENDOCRINOLOGIST (confidence: 0.88)"
+  │
+  ├─▶ KNOWLEDGE: Explains the biochemistry
+  │   │ Dr. Berg-style mechanism explanation
+  │   └─▶ OUTPUT: "High insulin → cells resistant → fatigue..."
+  │
+  ├─▶ ROOT CAUSE: Shows cascade effects
+  │   │ Systems thinking: diet → insulin → sleep → cortisol
+  │   └─▶ OUTPUT: "Vicious cycle identified. Root cause: diet."
+  │
+  └─▶ RECOMMENDER: Precise action plan
+      │ Specific supplements, dosages, timing
+      └─▶ OUTPUT: "Magnesium Bisglycinate 400mg before bed..."
+```
+
+## Try It Locally
 
 ```bash
-# No API key needed - see what it does
-python quick_demo.py
+# 1. No API key needed - see what the system does
+python3 quick_demo.py
 
-# See how conversation branching works
-python branching_demo.py
+# 2. See conversation branching
+python3 branching_demo.py
+
+# 3. With API key - live Dorost conversation
+python3 chat.py
 ```
+
+## Deploy Live (2 minutes)
+
+```bash
+# Get API key: https://aistudio.google.com/apikey
+# Add to .env: GOOGLE_API_KEY=your-key
+
+# Deploy to Google Cloud Run
+gcloud run deploy dorost \
+  --source . \
+  --runtime python311 \
+  --region us-central1 \
+  --allow-unauthenticated
+
+# Get your public URL
+# Visit: https://dorost-xxxxx-uc.a.run.app
+```
+
+Full deployment guide: [DEPLOYMENT.md](DEPLOYMENT.md)
 
 ## What Makes This Different
 
@@ -88,7 +257,7 @@ src/
 ## Tech Stack
 
 - Google ADK (multi-agent framework)
-- Gemini 2.5-flash-lite (medical knowledge)
+- Gemini 2.5-flash (medical knowledge)
 - Python 3.11
 
 ## Live Testing
@@ -98,7 +267,5 @@ src/
 # Add to .env: GOOGLE_API_KEY=your-key-here
 python demo.py
 ```
-
----
 
 Built for Kaggle Agents Intensive - Healthcare Track, November 2025

@@ -1,0 +1,67 @@
+# Git files
+.git
+.gitignore
+
+# Python cache
+__pycache__
+*.pyc
+*.pyo
+*.egg-info
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+logs/
+*.log
+.env.local
+.env.*.local
+test_results/
+coverage/
+
+# Documentation (don't deploy)
+*.md
+docs/
+*.ipynb
+
+# Deployment files (already handled by Cloud Build)
+Dockerfile
+.dockerignore
+cloudbuild.yaml
+
+# Local testing
+demo.py
+quick_demo.py
+branching_demo.py
+working_demo.py
+test_agents.py
