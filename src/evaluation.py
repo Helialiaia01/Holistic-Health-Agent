@@ -17,6 +17,8 @@ class AgentType(Enum):
     KNOWLEDGE = "knowledge"
     ROOT_CAUSE = "root_cause"
     RECOMMENDER = "recommender"
+    ORCHESTRATOR = "orchestrator"
+    CHAT = "chat"
 
 @dataclass
 class AgentMetrics:

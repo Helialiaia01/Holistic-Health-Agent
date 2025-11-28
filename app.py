@@ -34,9 +34,8 @@ load_dotenv()
 
 # Import Dorost components
 from src.orchestrator import create_health_agent_orchestrator
-from src.knowledge.context_engineering import ContextManager
 from src.logger import get_logger
-from src.evaluation import EvaluationTracker
+from src.evaluation import EvaluationTracker, AgentType
 
 # ============================================================================
 # FLASK APP SETUP
@@ -46,7 +45,7 @@ app = Flask(__name__)
 CORS(app)  # Enable CORS for cross-origin requests
 
 # Initialize logger
-logger = get_logger("dorost-api")
+logger = get_logger()
 
 # Initialize Dorost components
 orchestrator = create_health_agent_orchestrator()
@@ -166,7 +165,7 @@ def start_consultation():
         
         # Log the consultation
         evaluation.record_agent_execution(
-            agent_type="orchestrator",
+            agent_type=AgentType.ORCHESTRATOR,
             input_text=initial_query,
             output_text=str(consultation_output),
             execution_time=0.5,
@@ -260,7 +259,7 @@ def chat(session_id: str):
         
         # Log the interaction
         evaluation.record_agent_execution(
-            agent_type="chat",
+            agent_type=AgentType.CHAT,
             input_text=user_message,
             output_text=response_data["agent_response"],
             execution_time=0.1,
@@ -314,6 +313,7 @@ def get_results(session_id: str):
         
         results = {
             "consultation_id": session_id,
+            "initial_query": consultation_output.get("initial_query", ""),
             "status": session["status"],
             "created_at": session["created_at"],
             "overall_confidence": session.get("overall_confidence", 0.0),
@@ -343,8 +343,8 @@ def get_consultation(session_id: str):
             "current_stage": session["current_stage"],
             "created_at": session["created_at"],
             "conversation_count": len(session["conversation_history"]),
-            "red_flags": len(session["red_flags_detected"]),
-            "confidence": session["confidence_scores"]
+            "red_flags": session["red_flags_detected"],
+            "confidence": session["overall_confidence"]
         })
         
     except Exception as e:
@@ -361,8 +361,9 @@ def get_metrics():
         metrics = {
             "pipeline_stats": evaluation.get_pipeline_stats(),
             "agent_stats": {
-                agent: evaluation.get_agent_stats(agent)
-                for agent in ["intake", "diagnostic", "specialty_router", "knowledge", "root_cause", "recommender"]
+                agent.value: evaluation.get_agent_stats(agent)
+                for agent in [AgentType.INTAKE, AgentType.DIAGNOSTIC, AgentType.SPECIALTY_ROUTER,
+                             AgentType.KNOWLEDGE, AgentType.ROOT_CAUSE, AgentType.RECOMMENDER]
             }
         }
         return create_success_response(metrics)
