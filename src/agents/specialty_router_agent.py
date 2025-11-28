@@ -85,7 +85,7 @@ def create_specialty_router_tool() -> FunctionTool:
             if any(keyword in ' '.join(symptoms).lower() for keyword in flag.symptom.lower().split()):
                 red_flag_matches.append({
                     "symptom": flag.symptom,
-                    "urgency": flag.urgency.value,
+                    "urgency": flag.urgency.value if hasattr(flag.urgency, 'value') else str(flag.urgency),
                     "reason": flag.reason,
                     "action": flag.action,
                     "specialist": flag.specialist
