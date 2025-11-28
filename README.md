@@ -2,6 +2,11 @@
 
 An AI system that helps people figure out **which medical specialist to see** based on their symptoms, powered by multi-agent AI and Dr. Berg's health education methodology.
 
+**Submission:** Google AI Agents Intensive Capstone - Healthcare Track
+
+- **Kaggle Competition:** https://www.kaggle.com/competitions/agents-intensive-capstone-project
+- **Program Info:** https://rsvp.withgoogle.com/events/google-ai-agents-intensive_2025
+
 ## The Problem
 
 You're tired, have brain fog, and sugar cravings. Do you need an endocrinologist? Cardiologist? Just primary care?
@@ -260,12 +265,36 @@ src/
 - Gemini 2.5-flash (medical knowledge)
 - Python 3.11
 
-## Live Testing
+## Quick Start
 
 ```bash
-# Get API key from: https://aistudio.google.com/apikey
-# Add to .env: GOOGLE_API_KEY=your-key-here
-python demo.py
+# 1. Set up environment
+pip install -r requirements.txt
+
+# 2. Add your API key
+echo "GOOGLE_API_KEY=your-key-here" >> .env
+
+# 3. Run tests
+python -m pytest test_agents.py -v
+
+# 4. Test the system
+python -c "
+from src.orchestrator import HealthAgentOrchestrator
+orchestrator = HealthAgentOrchestrator()
+result = orchestrator.run_consultation('I have fatigue and weight gain')
+print('Status:', result['status'])
+print('Confidence:', result['overall_confidence'])
+"
 ```
 
-Built for Kaggle Agents Intensive - Healthcare Track, November 2025
+## Project Info
+
+- **Program:** Google AI Agents Intensive Capstone
+- **Track:** Healthcare / Multi-Agent Systems
+- **Submission:** Kaggle Agents Intensive Capstone Project
+- **Links:**
+  - Kaggle: https://www.kaggle.com/competitions/agents-intensive-capstone-project
+  - Program: https://rsvp.withgoogle.com/events/google-ai-agents-intensive_2025
+  - GitHub: https://github.com/Helialiaia01/Holistic-Health-Agent
+
+Built November 2025

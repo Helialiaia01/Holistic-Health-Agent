@@ -19,3 +19,19 @@ build/
 htmlcov/
 sessions.db
 health_agent.db
+
+# Demo and test files (for personal use only)
+demo.py
+quick_demo.py
+branching_demo.py
+chat.py
+app-simple.py
+*-simple.*
+*.ipynb
+QUICKSTART.md
+DEPLOYMENT_STATUS.md
+
+# Logs
+logs/
+*.log
+
