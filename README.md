@@ -292,9 +292,16 @@ print('Confidence:', result['overall_confidence'])
 - **Program:** Google AI Agents Intensive Capstone
 - **Track:** Healthcare / Multi-Agent Systems
 - **Submission:** Kaggle Agents Intensive Capstone Project
-- **Links:**
-  - Kaggle: https://www.kaggle.com/competitions/agents-intensive-capstone-project
-  - Program: https://rsvp.withgoogle.com/events/google-ai-agents-intensive_2025
-  - GitHub: https://github.com/Helialiaia01/Holistic-Health-Agent
+- **Methodology:** Inspired by Dr. Berg's health education approach
+  - YouTube: https://www.youtube.com/@Drberg
+  - Systems thinking: understand root causes, not just symptoms
+  - Biochemical explanations: how body systems interconnect
+
+## Links
+
+- **Kaggle:** https://www.kaggle.com/competitions/agents-intensive-capstone-project
+- **Program:** https://rsvp.withgoogle.com/events/google-ai-agents-intensive_2025
+- **GitHub:** https://github.com/Helialiaia01/Holistic-Health-Agent
+- **Dr. Berg (Methodology):** https://www.youtube.com/@Drberg
 
 Built November 2025
