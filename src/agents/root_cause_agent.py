@@ -33,14 +33,12 @@ def root_cause_agent() -> LlmAgent:
     
     # Initialize context manager
     context_manager = ContextManager()
-    
-    # Get task definition
-    task_def = context_manager.get_task_definition(TaskType.ROOT_CAUSE)
+    context_manager.set_current_task(TaskType.ROOT_CAUSE)
     
     # Create optimized prompt
     optimized_instruction = create_optimized_prompt(
-        base_prompt=ROOT_CAUSE_AGENT_INSTRUCTION,
-        task_type=TaskType.ROOT_CAUSE,
+        base_instruction=ROOT_CAUSE_AGENT_INSTRUCTION,
+        current_task=context_manager.current_task,
         examples=[
             """Example Cascade Analysis:
 ROOT CAUSE: Chronic stress (work + poor sleep)

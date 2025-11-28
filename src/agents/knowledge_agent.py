@@ -24,14 +24,12 @@ def knowledge_agent() -> LlmAgent:
     
     # Initialize context manager for clean context
     context_manager = ContextManager()
-    
-    # Get task definition for knowledge retrieval
-    task_def = context_manager.get_task_definition(TaskType.ANALYSIS)
+    context_manager.set_current_task(TaskType.ANALYSIS)
     
     # Create optimized prompt with Dr. Berg style
     optimized_instruction = create_optimized_prompt(
-        base_prompt=KNOWLEDGE_AGENT_INSTRUCTION,
-        task_type=TaskType.ANALYSIS,
+        base_instruction=KNOWLEDGE_AGENT_INSTRUCTION,
+        current_task=context_manager.current_task,
         examples=[
             "Example: 'Your white coating on tongue + sugar cravings + afternoon fatigue suggests insulin resistance. Here's what's happening: When you eat carbs, insulin spikes to store glucose. Over time, cells become resistant, forcing your pancreas to produce MORE insulin. High insulin blocks fat burning AND causes sugar cravings because cells can't access energy efficiently.'",
             "Example: 'Muscle cramps + anxiety + sleep issues point to magnesium deficiency. Magnesium is THE relaxation mineral - it blocks calcium from entering nerve cells (calcium causes contraction, magnesium causes relaxation). You need 400-500mg daily but most people get 200mg. Stress depletes it further.'"

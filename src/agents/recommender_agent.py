@@ -37,12 +37,12 @@ def recommender_agent() -> LlmAgent:
     """
     
     context_manager = ContextManager()
-    task_def = context_manager.get_task_definition(TaskType.RECOMMENDATION)
+    context_manager.set_current_task(TaskType.RECOMMENDATION)
     
     # Create optimized prompt with examples
     optimized_instruction = create_optimized_prompt(
-        base_prompt=RECOMMENDER_AGENT_INSTRUCTION,
-        task_type=TaskType.RECOMMENDATION,
+        base_instruction=RECOMMENDER_AGENT_INSTRUCTION,
+        current_task=context_manager.current_task,
         examples=[
             """Example Magnesium Recommendation:
 NUTRIENT: Magnesium
