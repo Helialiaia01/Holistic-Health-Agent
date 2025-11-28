@@ -38,44 +38,46 @@ class HealthAgentOrchestrator:
     def check_red_flags(self, symptoms: list[str]) -> dict:
         """
         Check for red flags that require immediate medical attention.
-        
-        Args:
-            symptoms: List of symptom descriptions
-            
-        Returns:
-            dict: Red flag analysis with urgency level
+        Only detects ACTUAL emergencies, not false positives.
         """
-        detected_flags = []
-        max_urgency = "ROUTINE"
+        user_text = ' '.join(symptoms).lower()
+        # Remove apostrophes to handle "can't" vs "cant"
+        user_text_normalized = user_text.replace("'", "")
         
-        for flag in RED_FLAGS:
-            # Check if flag symptom keywords appear in user symptoms
-            flag_symptom_keywords = flag.symptom.lower().split()
-            user_symptoms_lower = ' '.join(symptoms).lower()
-            
-            # Check for keyword match
-            if any(keyword in user_symptoms_lower for keyword in flag_symptom_keywords):
-                detected_flags.append(flag)
-                
-                # Update max urgency (get value from enum)
-                urgency_order = {
-                    "ROUTINE": 0,
-                    "MONITOR": 1,
-                    "SOON_1WEEK": 2,
-                    "URGENT_24HR": 3,
-                    "EMERGENCY_911": 4
+        # CRITICAL emergency phrases - immediately escalate
+        critical_phrases = [
+            "worst headache",
+            "chest pain",
+            "cant breathe",
+            "cannot breathe",
+            "severe chest",
+            "sudden severe",
+            "paralysis",
+            "cannot move",
+            "cant move",
+            "loss of consciousness",
+            "unconscious",
+            "severe bleeding",
+            "call 911",
+            "ambulance"
+        ]
+        
+        # Check for critical emergency phrases (use normalized text for matching)
+        for phrase in critical_phrases:
+            if phrase in user_text_normalized:
+                return {
+                    "has_red_flags": True,
+                    "flags": ["EMERGENCY DETECTED"],
+                    "max_urgency": "EMERGENCY_911",
+                    "should_stop": True
                 }
-                flag_urgency_val = urgency_order.get(flag.urgency.value, 0)
-                max_urgency_val = urgency_order.get(max_urgency, 0)
-                
-                if flag_urgency_val > max_urgency_val:
-                    max_urgency = flag.urgency.value
         
+        # Otherwise no red flags - continue with normal consultation
         return {
-            "has_red_flags": len(detected_flags) > 0,
-            "flags": detected_flags,
-            "max_urgency": max_urgency,
-            "should_stop": max_urgency in ["EMERGENCY_911", "URGENT_24HR"]
+            "has_red_flags": False,
+            "flags": [],
+            "max_urgency": "ROUTINE",
+            "should_stop": False
         }
     
     def run_consultation(self, initial_query: str) -> dict:
