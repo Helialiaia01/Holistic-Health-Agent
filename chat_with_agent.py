@@ -3,18 +3,20 @@ Dorost - Real Health Consultation Conversation
 Warm, empathetic, and genuinely helpful
 """
 
-from src.orchestrator import HealthAgentOrchestrator
+from src.orchestrator import HealthAgentOrchestrator, ConsultationValidator
 
 class DorostHealthCoach:
     """A genuinely caring health conversation partner."""
     
     def __init__(self):
         self.orchestrator = HealthAgentOrchestrator()
+        self.validator = ConsultationValidator()
         self.conversation_history = []
         self.initial_analysis = None
         self.turn_count = 0
         self.user_concern = ""
         self.explored_topics = set()
+        self.consultation_quality_score = 0.0
     
     def add_message(self, speaker, message):
         """Track conversation."""

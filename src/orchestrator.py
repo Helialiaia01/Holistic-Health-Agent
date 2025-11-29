@@ -386,13 +386,102 @@ CONTEXT MANAGEMENT:
 - Red flags checked at each stage
 """)
     
-    print("\n" + "=" * 60)
-    print("✅ Orchestrator ready for deployment")
+        print("\n" + "=" * 60)
+        print("✅ Orchestrator ready for deployment")
+        
+        print("\n💡 Key Features:")
+        print("- Sequential agent coordination")
+        print("- Clean context flow between agents")
+        print("- Red flag detection at each stage")
+        print("- Confidence scoring throughout")
+        print("- Early stopping for emergencies")
+        print("- Specialty routing integrated")
+
+
+# --- VALIDATION LAYER (inspired by Agent Shutton's robust pattern) ---
+
+class ConsultationValidator:
+    """
+    Validates consultation outputs at each stage.
+    Similar to Shutton's OutlineValidationChecker pattern.
+    """
     
-    print("\n💡 Key Features:")
-    print("- Sequential agent coordination")
-    print("- Clean context flow between agents")
-    print("- Red flag detection at each stage")
-    print("- Confidence scoring throughout")
-    print("- Early stopping for emergencies")
-    print("- Specialty routing integrated")
+    @staticmethod
+    def validate_specialty_routing(routing_result: dict) -> dict:
+        """
+        Validates that specialty routing has required fields and reasonable confidence.
+        Returns: {'is_valid': bool, 'errors': list, 'should_retry': bool}
+        """
+        errors = []
+        
+        # Check required fields
+        if not routing_result.get('recommendation'):
+            errors.append("No specialist recommendation provided")
+        
+        if not routing_result.get('confidence'):
+            errors.append("Confidence score missing")
+        elif not (0 <= routing_result['confidence'] <= 1):
+            errors.append("Confidence score out of range (must be 0-1)")
+        
+        if routing_result.get('confidence', 0) < 0.5:
+            errors.append("Low confidence - may need retry with more information")
+        
+        if not routing_result.get('reasoning'):
+            errors.append("No reasoning provided for recommendation")
+        
+        return {
+            'is_valid': len(errors) == 0,
+            'errors': errors,
+            'should_retry': len(errors) > 0 and routing_result.get('confidence', 0) < 0.7
+        }
+    
+    @staticmethod
+    def validate_recommendations(recommendations: list) -> dict:
+        """
+        Validates that recommendations are specific, not generic.
+        Returns: {'is_valid': bool, 'quality_score': float}
+        """
+        quality_checks = {
+            'has_dosages': False,
+            'has_timing': False,
+            'has_rationale': False,
+            'has_timeline': False,
+            'not_generic': True
+        }
+        
+        recommendation_text = ' '.join(recommendations).lower()
+        
+        # Check for specific, actionable content
+        if any(x in recommendation_text for x in ['mg', 'iu', 'grams', '400mg', '500mg']):
+            quality_checks['has_dosages'] = True
+        
+        if any(x in recommendation_text for x in ['morning', 'evening', 'before bed', 'after meal', 'per day']):
+            quality_checks['has_timing'] = True
+        
+        if any(x in recommendation_text for x in ['because', 'helps', 'supports', 'affects', 'due to']):
+            quality_checks['has_rationale'] = True
+        
+        if any(x in recommendation_text for x in ['week', 'month', '8-week', 'phase', 'stage']):
+            quality_checks['has_timeline'] = True
+        
+        # Generic warning
+        generic_phrases = ['eat healthy', 'exercise more', 'get enough sleep', 'drink water', 'reduce stress']
+        if all(x not in recommendation_text for x in generic_phrases):
+            quality_checks['not_generic'] = True
+        
+        quality_score = sum(quality_checks.values()) / len(quality_checks)
+        
+        return {
+            'is_valid': quality_score >= 0.7,
+            'quality_score': quality_score,
+            'quality_checks': quality_checks
+        }
+
+
+class EventActions:
+    """
+    Control flow actions for agent pipeline (inspired by Shutton).
+    """
+    def __init__(self, escalate: bool = False, retry: bool = False):
+        self.escalate = escalate
+        self.retry = retry
