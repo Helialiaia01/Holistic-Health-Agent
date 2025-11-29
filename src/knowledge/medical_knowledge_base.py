@@ -681,7 +681,11 @@ __all__ = [
     'MEDICAL_DISCLAIMER',
     'RED_FLAGS',
     'MEDICAL_SPECIALTIES',
+    'SPECIALTIES',
     'UrgencyLevel',
     'route_to_specialist',
     'validate_recommendation_confidence',
 ]
+
+# Alias for backward compatibility
+SPECIALTIES = MEDICAL_SPECIALTIES

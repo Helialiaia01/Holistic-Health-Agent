@@ -67,6 +67,7 @@ class HealthAgentOrchestrator:
             if phrase in user_text_normalized:
                 return {
                     "has_red_flags": True,
+                    "red_flags": ["EMERGENCY DETECTED"],
                     "flags": ["EMERGENCY DETECTED"],
                     "max_urgency": "EMERGENCY_911",
                     "should_stop": True
@@ -75,6 +76,7 @@ class HealthAgentOrchestrator:
         # Otherwise no red flags - continue with normal consultation
         return {
             "has_red_flags": False,
+            "red_flags": [],
             "flags": [],
             "max_urgency": "ROUTINE",
             "should_stop": False

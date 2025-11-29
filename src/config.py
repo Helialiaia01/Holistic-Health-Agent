@@ -18,6 +18,7 @@ class Config:
     
     # Logging
     LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
+    LOG_FILE = os.getenv("LOG_FILE", "logs/health_agent.log")
     
     # Health Agent
     MAX_PATTERN_MATCHES = int(os.getenv("MAX_PATTERN_MATCHES", "5"))

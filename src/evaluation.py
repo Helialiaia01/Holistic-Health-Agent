@@ -157,3 +157,23 @@ _tracker = EvaluationTracker()
 def get_tracker() -> EvaluationTracker:
     """Get the global evaluation tracker"""
     return _tracker
+
+def track_agent_execution(
+    agent_type: AgentType,
+    input_text: str,
+    output_text: str,
+    execution_time: float,
+    confidence_score: float = 0.8,
+    success: bool = True,
+    error_message: Optional[str] = None
+) -> AgentMetrics:
+    """Convenience function to track agent execution using global tracker"""
+    return _tracker.record_agent_execution(
+        agent_type=agent_type,
+        input_text=input_text,
+        output_text=output_text,
+        execution_time=execution_time,
+        confidence_score=confidence_score,
+        success=success,
+        error_message=error_message
+    )

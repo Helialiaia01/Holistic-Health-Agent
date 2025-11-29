@@ -1,118 +1,246 @@
+"""
+Dorost - Real Health Consultation Conversation
+Warm, empathetic, and genuinely helpful
+"""
+
 from src.orchestrator import HealthAgentOrchestrator
 
-def generate_followup_response(user_input, initial_result, history):
-    """Generate contextual follow-up responses based on the initial consultation."""
-    user_lower = user_input.lower()
+class DorostHealthCoach:
+    """A genuinely caring health conversation partner."""
     
-    # Response categories
-    if any(word in user_lower for word in ['what', 'why', 'how']):
-        # Explain the findings
-        if 'knowledge' in initial_result['stages']:
-            mechanisms = initial_result['stages']['knowledge'].get('mechanisms', '')
-            if mechanisms:
-                return f"Based on your symptoms, here's what's happening in your body: {mechanisms}\n\nThis pattern suggests metabolic stress affecting multiple systems. Would you like specific recommendations?"
-        return "Your symptoms suggest a interconnected health pattern. The initial consultation identified several contributing factors. What aspect would you like me to explain further?"
+    def __init__(self):
+        self.orchestrator = HealthAgentOrchestrator()
+        self.conversation_history = []
+        self.initial_analysis = None
+        self.turn_count = 0
+        self.user_concern = ""
+        self.explored_topics = set()
     
-    elif any(word in user_lower for word in ['recommend', 'what should', 'treatment', 'help', 'fix']):
-        # Provide recommendations
-        if 'recommender' in initial_result['stages']:
-            recommendations = initial_result['stages']['recommender'].get('recommendations', [])
-            if recommendations:
-                rec_text = "\n".join([f"• {rec}" for rec in recommendations[:3]])
-                return f"Based on your root causes, here are key recommendations:\n{rec_text}\n\nThese should be implemented over 8-12 weeks. Start with the first one for best results."
-        return "The key is addressing your root causes systematically. From the analysis, focus on sleep optimization first, then dietary changes. Would you like specific details on any of these?"
+    def add_message(self, speaker, message):
+        """Track conversation."""
+        self.conversation_history.append({
+            'speaker': speaker,
+            'message': message
+        })
     
-    elif any(word in user_lower for word in ['specialist', 'doctor', 'urgent', 'emergency']):
-        # Address medical questions
-        specialist = initial_result['stages']['specialty_router'].get('recommendation', 'Primary Care')
-        return f"You should see a {specialist}. They can run bloodwork to confirm the patterns we've identified. If you experience severe symptoms (worst headache of life, chest pain, can't breathe), seek emergency care immediately."
+    def _check_emergency(self, text):
+        """Check for emergency - only REAL emergencies."""
+        lower = text.lower()
+        critical = [
+            ('chest', 'pain'),
+            ('worst headache', 'ever'),
+            ('cant breathe', 'breath'),
+            ('loss of consciousness', 'unconscious'),
+            ('severe bleeding',),
+            ('sudden weakness', 'paralysis'),
+        ]
+        for words in critical:
+            if all(w in lower for w in words):
+                return True
+        return False
     
-    elif any(word in user_lower for word in ['timeline', 'when', 'how long', 'improve']):
-        # Timeline questions
-        if 'recommender' in initial_result['stages']:
-            timeline = initial_result['stages']['recommender'].get('timeline', '')
-            if timeline:
-                return f"Improvement timeline: {timeline}\n\nYou should notice initial changes within 1-2 weeks, significant improvement by week 4-8. Be consistent with the recommendations."
-        return "Most people see initial changes within 1-2 weeks, with significant improvements by 8-12 weeks. Consistency is key - these are lifestyle changes, not quick fixes."
+    def _understand_concern(self, user_input):
+        """Understand what's really bothering them."""
+        lower = user_input.lower()
+        
+        # Detect main issue
+        if any(w in lower for w in ['headache', 'migraine', 'head pain']):
+            return 'headache'
+        if any(w in lower for w in ['period', 'cycle', 'menstrual', 'pms']):
+            return 'hormonal'
+        if any(w in lower for w in ['tired', 'fatigue', 'exhausted', 'drained']):
+            return 'fatigue'
+        if any(w in lower for w in ['bloat', 'gas', 'digest', 'stomach']):
+            return 'digestion'
+        if any(w in lower for w in ['anxiety', 'anxious', 'stress', 'worried']):
+            return 'anxiety'
+        if any(w in lower for w in ['sleep', 'insomnia', 'cant sleep']):
+            return 'sleep'
+        
+        return 'general_concern'
     
-    elif any(word in user_lower for word in ['diet', 'food', 'eat', 'nutrition']):
-        return "Nutrition is foundational. Based on your patterns, focus on:\n• Whole foods (eliminate processed foods)\n• Consistent meal timing\n• Adequate protein and healthy fats\n• Reduce high-carb snacking\n\nWould you like specific food recommendations?"
-    
-    elif any(word in user_lower for word in ['sleep', 'rest', 'tired']):
-        return "Sleep is your foundation for healing. Prioritize:\n• 7-9 hours consistently\n• Same bedtime/wake time daily\n• Dark, cool bedroom\n• No screens 1 hour before bed\n\nMagnesium supplementation often helps. See your results for specific recommendations."
-    
-    elif any(word in user_lower for word in ['supplement', 'vitamin', 'mineral']):
-        return "Supplements address specific deficiencies identified in your analysis. The key is:\n• Right form (not all supplements are created equal)\n• Proper dosage\n• Correct timing\n• Quality source\n\nFollow the specific recommendations from your results. Start with one supplement at a time to assess tolerance."
-    
-    elif any(word in user_lower for word in ['stress', 'anxiety', 'mental']):
-        return "Mental and physical health are deeply interconnected. Your stress is likely amplifying your physical symptoms. Recommendations:\n• Daily meditation (10-20 mins)\n• Regular exercise\n• Connection with others\n• Stress management practices\n\nThis is as important as the dietary changes."
-    
-    # Default response
-    elif user_input.strip() in ['so?', 'ok', 'and?', 'what now?']:
-        return "The initial consultation identified your main issues and root causes. You can now:\n1. Ask questions about specific aspects (sleep, diet, supplements, etc.)\n2. Ask when you'll see improvements\n3. Ask for clarification on specialist recommendations\n\nWhat would you like to know more about?"
-    
-    else:
-        # Generic contextual response
-        return f"Based on your question about '{user_input}': Your symptoms suggest you need a comprehensive approach addressing sleep, stress, nutrition, and targeted supplementation. Each of these is explained in your results. Which area interests you most?"
+    def generate_response(self, user_input):
+        """Generate warm, conversational response."""
+        
+        # Check for emergency
+        if self._check_emergency(user_input):
+            self.add_message('user', user_input)
+            response = "I'm hearing something that needs immediate medical attention. Please call 911 or go to an emergency room right now. This is urgent."
+            self.add_message('assistant', response)
+            return response
+        
+        # First turn - initial consultation
+        if self.turn_count == 0:
+            print("\nLet me analyze what you're describing...\n")
+            
+            self.add_message('user', user_input)
+            self.user_concern = user_input
+            
+            # Run orchestrator to get insights
+            self.initial_analysis = self.orchestrator.run_consultation(user_input)
+            
+            # Get key information
+            patterns = self.initial_analysis.get('stages', {}).get('knowledge', {}).get('patterns_identified', [])
+            recommendations = self.initial_analysis.get('stages', {}).get('recommender', {}).get('recommendations', [])
+            
+            concern_type = self._understand_concern(user_input)
+            
+            # Build WARM, empathetic response
+            if concern_type == 'headache' and 'period' in user_input.lower():
+                response = f"""I hear you - period-related headaches can be really disruptive. You're definitely not alone in experiencing this.
 
-orchestrator = HealthAgentOrchestrator()
-consultation_history = []
-initial_result = None
+What you're describing makes a lot of sense. Hormonal headaches happen because of the changes in estrogen and progesterone during your cycle. The good news? This is very addressable with the right approach.
 
-print("=" * 70)
-print("CHAT WITH DOROST - Health Agent")
-print("=" * 70)
-print("\nTell me your health concerns (or type 'quit' to exit)\n")
+To help you best, I'd like to understand your full picture:
+- How often does this happen - every cycle, or just sometimes?
+- What else changes during your period besides the headaches?
+- How are you managing everything else right now - sleep, stress, energy levels?
 
-while True:
-    user_input = input("You: ").strip()
-    
-    if user_input.lower() in ['quit', 'exit', 'q']:
-        print("\nGoodbye! Remember to consult a doctor for professional advice.\n")
-        break
-    
-    if not user_input:
-        continue
-    
-    # First message: run full consultation
-    if not consultation_history:
-        print("\nDorost is analyzing...\n")
-        initial_result = orchestrator.run_consultation(user_input)
-        consultation_history.append({"user": user_input, "type": "initial"})
+Once I understand more, I can give you specific things to try that actually work."""
+            
+            elif concern_type == 'fatigue':
+                response = f"""I'm hearing that you're feeling exhausted, and I want to acknowledge how draining that can be.
+
+Fatigue usually isn't random - it's your body's way of telling us something needs attention. Whether it's related to how you're sleeping, what you're eating, stress, or how your body's hormones are running, we can figure it out.
+
+Tell me:
+- When does the fatigue hit worst - mornings, afternoons, or all day?
+- What's your sleep like when you do get to sleep?
+- Have you noticed any patterns - like does it get worse at certain times?
+
+The answers will tell me a lot about what's really going on."""
+            
+            elif concern_type == 'digestion':
+                response = f"""Digestive issues are frustrating, and I'm glad you're bringing this up because it matters.
+
+What you're experiencing - the bloating, gas, or whatever it is - tells me your gut is trying to communicate something. Often it's about what you're eating, how your body's processing things, or even stress affecting your digestion.
+
+Help me understand better:
+- When does it happen most - after certain foods, times of day, or is it pretty constant?
+- Does anything make it better or worse?
+- How long has this been going on?
+
+Once I know more, we can figure out what's actually driving this."""
+            
+            elif concern_type == 'sleep':
+                response = f"""Sleep problems are exhausting - literally. And I appreciate you naming this because sleep is foundational to everything else.
+
+Poor sleep affects your energy, your mood, your hormones, your digestion - basically everything. So fixing this often fixes a lot of other things too.
+
+Let me ask:
+- What's happening with your sleep - can't fall asleep, wake up during the night, or wake up too early?
+- What do you think is driving it - your mind racing, physical discomfort, life stress?
+- How long has this been going on?
+
+Understanding what's disrupting your sleep will help us figure out real solutions."""
+            
+            else:
+                response = f"""Thanks for sharing what's going on. I want to understand this better so I can actually help.
+
+Here's what I'm hearing: {user_input}
+
+This tells me a few things might be going on, but I need to know more to give you something genuinely useful.
+
+Walk me through:
+- How long has this been happening?
+- What makes it better or worse?
+- What else have you noticed changing along with this?
+
+The details will help me see the full picture."""
+            
+            self.add_message('assistant', response)
+            self.turn_count += 1
+            return response
         
-        print("=" * 70)
-        print(f"Status: {initial_result['status']}")
-        print(f"Overall Confidence: {initial_result['overall_confidence']:.0%}")
-        print("=" * 70)
+        # Follow-up turns - deepen understanding
+        else:
+            self.add_message('user', user_input)
+            
+            # Track what we've learned
+            lower = user_input.lower()
+            
+            if any(w in lower for w in ['sleep', 'hour', 'wake', 'insomnia', 'deep sleep', 'slept']):
+                self.explored_topics.add('sleep')
+            if any(w in lower for w in ['stress', 'work', 'anxious', 'worried', 'student', 'school']):
+                self.explored_topics.add('stress')
+            if any(w in lower for w in ['eat', 'food', 'diet', 'sugar', 'caffeine', 'meat', 'fiber']):
+                self.explored_topics.add('diet')
+            if any(w in lower for w in ['exercise', 'workout', 'movement', 'active', 'moving', 'minutes']):
+                self.explored_topics.add('exercise')
+            
+            # Build smart response without repeating their words verbatim
+            # Instead, paraphrase and connect
+            response_parts = []
+            
+            # Smart acknowledgment - paraphrase, don't repeat
+            if 'period' in lower or 'cycle' in lower or 'bleeding' in lower or 'menstrual' in lower:
+                response_parts.append("I'm picking up on something important about your cycle - the changes in bleeding and timing along with your headaches tells me your hormones are shifting in specific ways.")
+            elif 'sleep' in lower:
+                response_parts.append("Your sleep situation is giving me real clues about what's happening.")
+            elif 'stress' in lower or 'student' in lower or 'school' in lower or 'work' in lower:
+                response_parts.append("Your stress load is really relevant here - that's often the hidden driver of hormonal issues.")
+            elif 'eat' in lower or 'food' in lower or 'diet' in lower:
+                response_parts.append("What you're eating matters more than you might think - nutrition directly impacts hormonal balance.")
+            elif 'exercise' in lower or 'movement' in lower or 'workout' in lower:
+                response_parts.append("Your movement and exercise habits are definitely part of the picture.")
+            
+            # Connect specific insights
+            if 'period' in self.user_concern.lower():
+                if 'sleep' in lower and 'deep sleep' in lower:
+                    response_parts.append("You mentioned having deep sleep - that's actually good, but if you're only sleeping deeply, you might not be cycling through all the sleep stages your body needs. That could affect how you feel.")
+                if 'stress' in lower:
+                    response_parts.append("Stress directly raises cortisol, which interferes with estrogen and progesterone. That's a key piece of why your symptoms get worse.")
+                if 'exercise' in lower and 'period' in lower:
+                    response_parts.append("Smart move not exercising during your period - that shows you're already listening to your body.")
+                if 'bleeding' in lower and 'headache' in lower:
+                    response_parts.append("The connection between changes in your bleeding and your headaches is significant - they're both hormonal signs telling us something about your cycle.")
+            
+            # Determine next question - skip already covered topics
+            next_question = ""
+            if 'sleep' not in self.explored_topics:
+                next_question = "How's your sleep looking generally - are you getting enough of it?"
+            elif 'stress' not in self.explored_topics:
+                next_question = "Tell me more about your stress - what's the biggest source right now?"
+            elif 'diet' not in self.explored_topics:
+                next_question = "What does a typical day of eating look like for you?"
+            elif 'exercise' not in self.explored_topics:
+                next_question = "Are you doing any regular exercise or movement?"
+            else:
+                # All major topics covered - time for insights
+                next_question = "Based on everything you've shared, I'm seeing the real picture now. The biggest thing I'd focus on first would be your stress - that's the domino that's probably setting everything else off. Does that match what you're feeling?"
+            
+            # Build final response
+            if response_parts:
+                response = "\n\n".join(response_parts) + f"\n\n{next_question}"
+            else:
+                response = next_question
+            
+            self.add_message('assistant', response)
+            self.turn_count += 1
+            return response
+
+
+# Main execution
+if __name__ == "__main__":
+    coach = DorostHealthCoach()
+
+    print("\n" + "=" * 80)
+    print("                  DOROST - Your Health Coach")
+    print("=" * 80)
+    print("\nHey there. I'm here to listen and help you figure out what's going on.")
+    print("Tell me what's been bothering you - no need for medical terminology, just be real.\n")
+    print("(Type 'quit' when you're done)\n")
+
+    while True:
+        user_input = input("You: ").strip()
         
-        # Show the recommendation
-        if 'specialty_router' in initial_result['stages']:
-            print(f"\n🏥 SPECIALIST RECOMMENDATION:")
-            print(f"   {initial_result['stages']['specialty_router'].get('recommendation', 'N/A')}")
+        if user_input.lower() in ['quit', 'exit', 'q', 'bye']:
+            print("\nTake care of yourself. Remember, these conversations are for understanding,")
+            print("but always check with your doctor for medical decisions. You've got this.\n")
+            break
         
-        # Show red flags if detected
-        if initial_result.get('red_flags'):
-            print(f"\n⚠️  RED FLAGS DETECTED: {len(initial_result['red_flags'])}")
-            for flag in initial_result['red_flags']:
-                print(f"   - {flag}")
+        if not user_input:
+            continue
         
-        # Show all 6 stages
-        print(f"\n📊 ALL STAGES COMPLETED:")
-        for stage_name, stage_data in initial_result['stages'].items():
-            confidence = stage_data.get('confidence', 0)
-            print(f"   ✓ {stage_name.replace('_', ' ').title()}: {confidence:.0%} confidence")
-        
-        print("\n" + "-" * 70)
-        print("\n💬 You can now ask follow-up questions about your results:\n")
-    
-    # Follow-up messages: provide contextual responses based on initial consultation
-    else:
-        consultation_history.append({"user": user_input, "type": "followup"})
-        
-        # Generate contextual responses based on the initial consultation
-        response = generate_followup_response(user_input, initial_result, consultation_history)
-        
+        response = coach.generate_response(user_input)
         print(f"\nDorost: {response}\n")
-        print("-" * 70 + "\n")
-
-
