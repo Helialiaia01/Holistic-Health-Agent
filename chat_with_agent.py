@@ -165,9 +165,9 @@ The details will help me see the full picture."""
                 self.explored_topics.add('sleep')
             if any(w in lower for w in ['stress', 'work', 'anxious', 'worried', 'student', 'school']):
                 self.explored_topics.add('stress')
-            if any(w in lower for w in ['eat', 'food', 'diet', 'sugar', 'caffeine', 'meat', 'fiber']):
+            if any(w in lower for w in ['eat', 'eating', 'food', 'diet', 'sugar', 'caffeine', 'meat', 'vegetable', 'grain', 'fish', 'chicken', 'nutrition']):
                 self.explored_topics.add('diet')
-            if any(w in lower for w in ['exercise', 'workout', 'movement', 'active', 'moving', 'minutes']):
+            if any(w in lower for w in ['exercise', 'exercising', 'workout', 'movement', 'active', 'moving', 'minutes', 'daily', 'gym', 'yoga']):
                 self.explored_topics.add('exercise')
             
             # Build smart response without repeating their words verbatim
@@ -199,16 +199,22 @@ The details will help me see the full picture."""
             
             # Determine next question - skip already covered topics
             next_question = ""
+            uncovered = []
+            
             if 'sleep' not in self.explored_topics:
-                next_question = "How's your sleep looking generally - are you getting enough of it?"
-            elif 'stress' not in self.explored_topics:
-                next_question = "Tell me more about your stress - what's the biggest source right now?"
-            elif 'diet' not in self.explored_topics:
-                next_question = "What does a typical day of eating look like for you?"
-            elif 'exercise' not in self.explored_topics:
-                next_question = "Are you doing any regular exercise or movement?"
+                uncovered.append(("sleep", "How's your sleep looking generally - are you getting enough of it?"))
+            if 'stress' not in self.explored_topics:
+                uncovered.append(("stress", "Tell me more about your stress - what's the biggest source right now?"))
+            if 'diet' not in self.explored_topics:
+                uncovered.append(("diet", "What does a typical day of eating look like for you?"))
+            if 'exercise' not in self.explored_topics:
+                uncovered.append(("exercise", "Are you doing any regular exercise or movement?"))
+            
+            if uncovered:
+                # Ask about the first uncovered topic
+                next_question = uncovered[0][1]
             else:
-                # All major topics covered - time for insights
+                # All major topics covered - time for synthesis
                 next_question = "Based on everything you've shared, I'm seeing the real picture now. The biggest thing I'd focus on first would be your stress - that's the domino that's probably setting everything else off. Does that match what you're feeling?"
             
             # Build final response

@@ -385,17 +385,6 @@ CONTEXT MANAGEMENT:
 - Confidence scores tracked throughout
 - Red flags checked at each stage
 """)
-    
-        print("\n" + "=" * 60)
-        print("✅ Orchestrator ready for deployment")
-        
-        print("\n💡 Key Features:")
-        print("- Sequential agent coordination")
-        print("- Clean context flow between agents")
-        print("- Red flag detection at each stage")
-        print("- Confidence scoring throughout")
-        print("- Early stopping for emergencies")
-        print("- Specialty routing integrated")
 
 
 # --- VALIDATION LAYER (inspired by Agent Shutton's robust pattern) ---
