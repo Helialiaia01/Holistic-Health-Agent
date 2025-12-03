@@ -2,6 +2,8 @@
 
 An AI system that helps people figure out **which medical specialist to see** based on their symptoms, powered by multi-agent AI and Dr. Berg's health education methodology.
 
+> **Name Origin:** *Dorost* (درست) is Persian for "correct" or "right" — representing the mission to guide people to the **right specialist at the right time**.
+
 **Submission:** Google AI Agents Intensive Capstone - Healthcare Track
 
 - **Kaggle Competition:** https://www.kaggle.com/competitions/agents-intensive-capstone-project
